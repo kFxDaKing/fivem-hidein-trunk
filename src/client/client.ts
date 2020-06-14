@@ -8,14 +8,27 @@ const DOOR_BOOT = 5;
 const LOCK_UNLOCKED = 1;
 const SEAT_DRIVER = -1;
 
-setTick(async () => {
-    const playerPed = PlayerPedId();
-    if (inTrunk) {
-        await insideTrunk(playerPed);
-    } else {
-        await outsideTrunk(playerPed);
-    }
-});
+function runWithTimeout(fn: Function, duration: number): Promise<void> {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(fn());
+        }, duration);
+    });
+}
+
+function DrawText3D(coords: number[], text: string): void {
+    const worldToMap = World3dToScreen2d(coords[0], coords[1], coords[2]);
+
+    SetTextScale(0.4, 0.4);
+    SetTextFont(4);
+    SetTextEntry('STRING');
+    SetTextCentre(true);
+    SetTextColour(255, 255, 255, 255);
+    SetTextOutline();
+
+    AddTextComponentString(text);
+    DrawText(worldToMap[1], worldToMap[2]);
+}
 
 async function insideTrunk(playerPed: number): Promise<void> {
     const vehicle = GetEntityAttachedTo(playerPed);
@@ -97,24 +110,11 @@ async function outsideTrunk(playerPed: number): Promise<void> {
     }
 }
 
-function runWithTimeout(fn: Function, duration: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(fn());
-        }, duration);
-    })
-}
-
-function DrawText3D(coords: number[], text: string): void {
-    const worldToMap = World3dToScreen2d(coords[0], coords[1], coords[2]);
-
-    SetTextScale(0.4, 0.4);
-    SetTextFont(4);
-    SetTextEntry("STRING");
-    SetTextCentre(true);
-    SetTextColour(255, 255, 255, 255);
-    SetTextOutline();
-
-    AddTextComponentString(text);
-    DrawText(worldToMap[1], worldToMap[2]);
-}
+setTick(async () => {
+    const playerPed = PlayerPedId();
+    if (inTrunk) {
+        await insideTrunk(playerPed);
+    } else {
+        await outsideTrunk(playerPed);
+    }
+});
