@@ -32,7 +32,7 @@ function DrawText3D(coords: number[], text: string): void {
 
 async function insideTrunk(playerPed: number): Promise<void> {
     const vehicle = GetEntityAttachedTo(playerPed);
-    if (!DoesEntityExist(vehicle) || IsPedDeadOrDying(playerPed, true) || IsPedFatallyInjured(playerPed)) {
+    if (!Boolean(DoesEntityExist(vehicle)) || Boolean(IsPedDeadOrDying(playerPed, true)) || Boolean(IsPedFatallyInjured(playerPed))) {
         inTrunk = false;
         SetEntityCollision(playerPed, true, true);
         DetachEntity(playerPed, true, true);
@@ -49,14 +49,14 @@ async function insideTrunk(playerPed: number): Promise<void> {
     DrawText3D(bootCoords, language.actionLeave);
     if (GetVehicleDoorAngleRatio(vehicle, DOOR_BOOT) < 0.9) {
         SetEntityVisible(playerPed, false, false);
-    } else if (!IsEntityPlayingAnim(playerPed, TrunkAnimation.DICT, TrunkAnimation.NAME, TrunkAnimation.FLAG)) {
-        while (!HasAnimDictLoaded(TrunkAnimation.DICT)) {
+    } else if (!Boolean(IsEntityPlayingAnim(playerPed, TrunkAnimation.DICT, TrunkAnimation.NAME, TrunkAnimation.FLAG))) {
+        while (!Boolean(HasAnimDictLoaded(TrunkAnimation.DICT))) {
             await runWithTimeout(() => RequestAnimDict(TrunkAnimation.DICT), 5);
         }
         TaskPlayAnim(playerPed, TrunkAnimation.DICT, TrunkAnimation.NAME, 8.0, -8.0, -1, 1, 0, false, false, false);
         SetEntityVisible(playerPed, true, false);
     }
-    if (IsControlJustReleased(0, 38) && inTrunk) {
+    if (Boolean(IsControlJustReleased(0, 38)) && inTrunk) {
         inTrunk = false;
         SetCarBootOpen(vehicle);
         SetEntityCollision(playerPed, true, true);
@@ -72,10 +72,10 @@ async function insideTrunk(playerPed: number): Promise<void> {
 async function outsideTrunk(playerPed: number): Promise<void> {
     const pedCoords = GetEntityCoords(playerPed, true);
     const vehicle = GetClosestVehicle(pedCoords[0], pedCoords[1], pedCoords[2], 10, 0, 70);
-    if (!DoesEntityExist(vehicle)) {
+    if (!Boolean(DoesEntityExist(vehicle))) {
         return Promise.resolve();
     }
-    if (!IsVehicleSeatFree(vehicle, SEAT_DRIVER)) {
+    if (!Boolean(IsVehicleSeatFree(vehicle, SEAT_DRIVER))) {
         return Promise.resolve();
     }
     const lockStatus = GetVehicleDoorLockStatus(vehicle);
@@ -91,22 +91,22 @@ async function outsideTrunk(playerPed: number): Promise<void> {
         return Promise.resolve();
     }
     DrawText3D(bootCoords, language.actionEnter);
-    if (IsControlJustReleased(0, 74)) {
+    if (Boolean(IsControlJustReleased(0, 74))) {
         if (GetVehicleDoorAngleRatio(vehicle, DOOR_BOOT) < 0.9) {
             SetCarBootOpen(vehicle);
         } else {
             SetVehicleDoorShut(vehicle, DOOR_BOOT, false);
         }
     }
-    if (IsControlJustReleased(0, 38) && !inTrunk && !IsEntityAttached(playerPed) && !IsEntityAttachedToAnyPed(vehicle)) {
+    if (Boolean(IsControlJustReleased(0, 38)) && !inTrunk && !Boolean(IsEntityAttached(playerPed)) && !Boolean(IsEntityAttachedToAnyPed(vehicle))) {
         inTrunk = true;
         SetCarBootOpen(vehicle);
         await runWithTimeout(() => AttachEntityToEntity(playerPed, vehicle, -1, 0, -2.2, 0.5, 0, 0, 0, false, false, false, false, 20, true), 350);
-        while (!HasAnimDictLoaded(TrunkAnimation.DICT)) {
+        while (!Boolean(HasAnimDictLoaded(TrunkAnimation.DICT))) {
             await runWithTimeout(() => RequestAnimDict(TrunkAnimation.DICT), 5);
         }
         TaskPlayAnim(playerPed, TrunkAnimation.DICT, TrunkAnimation.NAME, 8.0, -8.0, -1, 1, 0, false, false, false);
-        await runWithTimeout(() => SetVehicleDoorShut(vehicle, DOOR_BOOT, false), 500);
+        await runWithTimeout(() => SetVehicleDoorShut(vehicle, DOOR_BOOT, false), 1500);
     }
 }
 
