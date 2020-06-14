@@ -1,6 +1,9 @@
 import { TrunkAnimation } from './Trunk.animation';
+import { I18nLanguageConfig } from './config/I18nLanguage.config';
+import { EtLanguageConfig } from './config/EtLanguage.config';
 
 let inTrunk = false;
+const language: I18nLanguageConfig = new EtLanguageConfig();
 const DOOR_BOOT = 5;
 const LOCK_UNLOCKED = 1;
 const SEAT_DRIVER = -1;
@@ -30,7 +33,7 @@ async function insideTrunk(playerPed: number): Promise<void> {
     const bootBone = GetEntityBoneIndexByName(vehicle, 'boot');
     const bootCoords = GetWorldPositionOfEntityBone(vehicle, bootBone);
     SetEntityCollision(playerPed, false, false);
-    DrawText3D(bootCoords, '[E] to leave trunk'); // TODO i18n
+    DrawText3D(bootCoords, language.actionLeave);
     if (GetVehicleDoorAngleRatio(vehicle, DOOR_BOOT) < 0.9) {
         SetEntityVisible(playerPed, false, false);
     } else if (!IsEntityPlayingAnim(playerPed, TrunkAnimation.DICT, TrunkAnimation.NAME, TrunkAnimation.FLAG)) {
@@ -63,7 +66,7 @@ async function outsideTrunk(playerPed: number): Promise<void> {
         return Promise.resolve();
     }
     const lockStatus = GetVehicleDoorLockStatus(vehicle);
-    if (lockStatus !== 1) {
+    if (lockStatus !== LOCK_UNLOCKED) {
         return Promise.resolve();
     }
     const bootBone = GetEntityBoneIndexByName(vehicle, 'boot');
@@ -74,7 +77,7 @@ async function outsideTrunk(playerPed: number): Promise<void> {
     if (GetDistanceBetweenCoords(pedCoords[0], pedCoords[1], pedCoords[2], bootCoords[0], bootCoords[1], bootCoords[2], true) > 1.5) {
         return Promise.resolve();
     }
-    DrawText3D(bootCoords, '[E] Hide\n[H] Open'); // TODO i18n
+    DrawText3D(bootCoords, language.actionEnter);
     if (IsControlJustReleased(0, 74)) {
         if (GetVehicleDoorAngleRatio(vehicle, DOOR_BOOT) < 0.9) {
             SetCarBootOpen(vehicle);
