@@ -1,3 +1,4 @@
+/* eslint-disable no-extra-boolean-cast */
 import { TrunkAnimation } from './Trunk.animation';
 import { I18nLanguageConfig } from './config/I18nLanguage.config';
 import { EtLanguageConfig } from './config/EtLanguage.config';
