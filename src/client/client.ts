@@ -4,6 +4,7 @@ import { I18nLanguageConfig } from './config/I18nLanguage.config';
 import { EtLanguageConfig } from './config/EtLanguage.config';
 
 let inTrunk = false;
+let isRunning = false;
 const language: I18nLanguageConfig = new EtLanguageConfig();
 const DOOR_BOOT = 5;
 const LOCK_UNLOCKED = 1;
@@ -112,10 +113,14 @@ async function outsideTrunk(playerPed: number): Promise<void> {
 }
 
 setTick(async () => {
-    const playerPed = PlayerPedId();
-    if (inTrunk) {
-        await insideTrunk(playerPed);
-    } else {
-        await outsideTrunk(playerPed);
+    if (!isRunning) {
+        isRunning = true;
+        const playerPed = PlayerPedId();
+        if (inTrunk) {
+            await insideTrunk(playerPed);
+        } else {
+            await outsideTrunk(playerPed);
+        }
+        isRunning = false;
     }
 });
